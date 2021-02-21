@@ -1,0 +1,25 @@
+{
+  "name": "personal-bot",
+  "version": "1.0.0",
+  "description": "My personal bot",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "keywords": [],
+  "author": "Robin Schapendonk",
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/opus": "^0.3.3",
+    "better-sqlite3": "^7.1.2",
+    "big-integer": "^1.6.48",
+    "chalk": "^4.1.0",
+    "discord.js": "^12.4.1",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.13.0",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7",
+    "ssh2": "^0.8.9",
+    "ytdl-core": "^4.4.2"
+  }
+}
