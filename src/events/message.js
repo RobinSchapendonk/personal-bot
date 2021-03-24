@@ -1,15 +1,14 @@
 const {
 	PREFIX,
-	SSH_IP,
-	SSH_USERNAME,
-	SSH_PASSWORD,
+	OWNERS,
+	POKEHUNT_OWNERS,
 } = process.env;
 
 const { join } = require('path');
 const { settings, messages } = require(join(__dirname, '../utils/databases.js'));
 const { log } = require(join(__dirname, '../utils/functions.js'));
 const { clean } = require(join(__dirname, '../utils/message.js'));
-const { Client: sshclient } = require('ssh2');
+const { restartPokehunt } = require(join(__dirname, '../utils/pokehunt.js'));
 
 module.exports = async (client, message) => {
 	if (message.author.bot || message.channel.type === 'dm') return;
@@ -62,7 +61,7 @@ module.exports = async (client, message) => {
 	const args = message.content.slice(PREFIX.length).trim().split(/ +/g);
 	const command = args.shift().toLowerCase();
 
-	if (command == 'eval' && process.env.OWNERS.includes(message.author.id)) {
+	if (command == 'eval' && OWNERS.includes(message.author.id)) {
 		try {
 			const code = args.join(' ');
 			let evaled = eval(code);
@@ -75,22 +74,10 @@ module.exports = async (client, message) => {
 		}
 	}
 
-	if (command == 'restart-pokehunt' && process.env.POKEHUNT.includes(message.author.id)) {
-		const connection = new sshclient();
-		connection.connect({
-			host: SSH_IP,
-			port: 22,
-			username: SSH_USERNAME,
-			password: SSH_PASSWORD,
-		});
-		connection.on('ready', () => {
-			connection.exec('cd personal-bot && docker-compose restart', (err, stream) => {
-				stream.on('close', () => {
-					message.channel.send('Restarting!');
-					return connection.end();
-				}).resume();
-			});
-		});
+	if (command == 'restart-pokehunt' && POKEHUNT_OWNERS.includes(message.author.id)) {
+		message.channel.send('Connecting to the server!');
+		const res = await restartPokehunt();
+		return message.channel.send(res);
 	}
 
 	const cmd = client.commands.get(command);

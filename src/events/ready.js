@@ -1,7 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const { join } = require('path');
 const ms = require('ms');
-const { getUptime } = require(join(__dirname, '../utils/pokehunt.js'));
+const { getUptime, restartPokehunt } = require(join(__dirname, '../utils/pokehunt.js'));
 
 let amountOfShards = process.env.POKEHUNT_SHARDS;
 
@@ -21,8 +21,10 @@ module.exports = async (client) => {
 		embed.setTimestamp();
 
 		const res = await getUptime();
-		const length = Object.values(res);
-		if (length > amountOfShards) amountOfShards = length;
+		if (!res['0']) return restartPokehunt();
+
+		const uptimes = Object.values(res);
+		if (uptimes.length > amountOfShards) amountOfShards = uptimes.length;
 
 		let string = '';
 		for (let i = 0; i < amountOfShards; i++) {
