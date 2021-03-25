@@ -28,11 +28,11 @@ module.exports = async (client) => {
 
 		let string = '';
 		for (let i = 0; i < amountOfShards; i++) {
-			string += `Shard ${i + 1}: ${ms(res[i] ? res[i] : 0)}\n`;
+			string += `Shard ${i + 1}: ${ms(res[i] ? res[i] : 0, { long: true })}\n`;
 			if (i == amountOfShards - 1) {
 				embed.setDescription(string);
 				message.edit('', embed);
 			}
 		}
-	}, 1000);
+	}, 1000 * 60);
 };

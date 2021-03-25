@@ -2,7 +2,11 @@ version: '3.8'
 
 services:
   bot:
-    build: .
     container_name: personal-bot
+    image: "node:14"
+    user: "node"
+    working_dir: /home/node/bot
     volumes:
-      - /home/pi/.ssh/id_rsa:/.ssh/id_rsa
+      - ~/.ssh/id_rsa:/home/node/.ssh/id_rsa
+      - ./:/home/node/bot
+    command: bash -c "npm i && node ."
