@@ -5,10 +5,10 @@ const {
 } = process.env;
 
 const { join } = require('path');
-const { settings, messages } = require(join(__dirname, '../utils/databases.js'));
+const { settings } = require(join(__dirname, '../utils/databases.js'));
 const { log } = require(join(__dirname, '../utils/functions.js'));
 const { clean } = require(join(__dirname, '../utils/message.js'));
-const { restartPokehunt } = require(join(__dirname, '../utils/pokehunt.js'));
+const { restartPokehunt, backupPokehunt } = require(join(__dirname, '../utils/pokehunt.js'));
 
 module.exports = async (client, message) => {
 	if (message.author.bot || message.channel.type === 'dm') return;
@@ -53,8 +53,6 @@ module.exports = async (client, message) => {
 			}
 			client.userMessages.set(message.author.id, message.createdAt);
 		}
-
-		messages.prepare('INSERT INTO messages (id, guild, channel, author, content, createdAt) VALUES (?,?,?,?,?,?)').run([message.id, message.guild.id, message.channel.id, message.author.id, message.content, message.createdAt.getTime()]);
 	}
 
 	if (!message.content.startsWith(PREFIX)) return;
@@ -77,6 +75,12 @@ module.exports = async (client, message) => {
 	if (command == 'restart-pokehunt' && POKEHUNT_OWNERS.includes(message.author.id)) {
 		message.channel.send('Connecting to the server!');
 		const res = await restartPokehunt();
+		return message.channel.send(res);
+	}
+
+	if (command == 'backup-pokehunt' && POKEHUNT_OWNERS.includes(message.author.id)) {
+		message.channel.send('Connecting to the server!');
+		const res = await backupPokehunt();
 		return message.channel.send(res);
 	}
 

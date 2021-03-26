@@ -8,5 +8,7 @@ services:
     working_dir: /home/node/bot
     volumes:
       - ~/.ssh/id_rsa:/home/node/.ssh/id_rsa
+      - ~/.ssh/known_hosts:/home/node/.ssh/known_hosts
+      - ~/Downloads/pokehunt-backup:/home/node/pokehunt-backup
       - ./:/home/node/bot
     command: bash -c "npm i && node ."
