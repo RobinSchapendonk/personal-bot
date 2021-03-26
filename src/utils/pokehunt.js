@@ -24,6 +24,12 @@ const getUptime = async () => {
 	});
 };
 
+const checkOnlineStatus = async () => {
+	const res = await getUptime();
+	if (!res[0]) return false;
+	else return true;
+};
+
 const restartPokehunt = async () => {
 	return new Promise((resolve) => {
 		if (restarting) return resolve('PokéHunt is already restarting!');
@@ -41,9 +47,15 @@ const restartPokehunt = async () => {
 		connection.on('ready', () => {
 			connection.exec(POKEHUNT_SSH_RESTART_COMMAND, (err, stream) => {
 				stream.on('close', () => {
-					restarting = false;
 					resolve('PokéHunt has been restarted!');
-					return connection.end();
+
+					const handle = setInterval(async () => {
+						if(await checkOnlineStatus()) {
+							restarting = false;
+							clearInterval(handle);
+							return connection.end();
+						}
+					}, 1000);
 				}).resume();
 			});
 		});
@@ -91,4 +103,5 @@ module.exports = {
 	getUptime,
 	restartPokehunt,
 	backupPokehunt,
+	checkOnlineStatus,
 };

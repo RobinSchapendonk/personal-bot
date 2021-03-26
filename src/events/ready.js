@@ -1,7 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const { join } = require('path');
 const ms = require('ms');
-const { getUptime, restartPokehunt } = require(join(__dirname, '../utils/pokehunt.js'));
+const { getUptime, restartPokehunt, checkOnlineStatus } = require(join(__dirname, '../utils/pokehunt.js'));
 
 let amountOfShards = process.env.POKEHUNT_SHARDS;
 
@@ -35,4 +35,26 @@ module.exports = async (client) => {
 			}
 		}
 	}, 1000 * 60);
+
+	setInterval(async () => {
+		if(!await checkOnlineStatus()) {
+			const now = Date.now();
+
+			try {
+				const user1 = await client.users.cache.get('193782837604909056');
+				if (user1) user1.send(`${now} I would have tried to restart the bot now`);
+			} catch (e) {
+				return;
+			}
+			try {
+				const user2 = await client.users.cache.get('425165710847770634');
+				if (user2) user2.send(`${now} I would have tried to restart the bot now`);
+			} catch (e) {
+				return;
+			}
+
+			//return restartPokehunt();
+		} 
+			
+	}, 1000);
 };
