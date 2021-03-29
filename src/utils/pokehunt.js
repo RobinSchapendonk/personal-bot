@@ -97,7 +97,7 @@ const downloadBackup = async () => {
 	// }, '~/pokehunt-backup', (err) => {
 	// 	console.log(err);
 	// });
-	return exec(`scp -r -i ${POKEHUNT_SSH_KEY} -P ${POKEHUNT_SSH_PORT} ${POKEHUNT_SSH_USERNAME}@${POKEHUNT_IP}:~/backups/* ~/pokehunt-backup/`);
+	return exec(`scp -r -i ${POKEHUNT_SSH_KEY} -P ${POKEHUNT_SSH_PORT} ${POKEHUNT_SSH_USERNAME}@${POKEHUNT_IP}:~/backup.zip ~/pokehunt-backup/`);
 };
 
 module.exports = {
