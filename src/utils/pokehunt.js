@@ -7,12 +7,18 @@ const {
 	POKEHUNT_SSH_PASSPHRASE,
 	POKEHUNT_SSH_RESTART_COMMAND,
 	POKEHUNT_SSH_BACKUP_COMMAND,
+
+	WEBHOOK_ID,
+	WEBHOOK_TOKEN,
 } = process.env;
 
 const { exec } = require('child_process');
+const { MessageEmbed, WebhookClient } = require('discord.js');
 const fetch = require('node-fetch');
 const { Client: sshclient } = require('ssh2');
 // const scpclient = require('scp2');
+
+const hook = new WebhookClient(WEBHOOK_ID, WEBHOOK_TOKEN);
 
 let restarting = false;
 
@@ -32,9 +38,15 @@ const checkOnlineStatus = async () => {
 };
 
 const restartPokehunt = async () => {
-	return new Promise((resolve) => {
+	// eslint-disable-next-line no-async-promise-executor
+	return new Promise(async (resolve) => {
 		if (restarting) return resolve('PokéHunt is already restarting!');
 		restarting = true;
+
+		const embed = new MessageEmbed();
+		embed.setTimestamp();
+		embed.setDescription('Restarting PokéHunt!');
+		hook.send(embed);
 
 		const connection = new sshclient();
 		connection.connect({

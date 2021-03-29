@@ -38,23 +38,7 @@ module.exports = async (client) => {
 
 	setInterval(async () => {
 		if(!await checkOnlineStatus()) {
-			const now = Date.now();
-
-			try {
-				const user1 = await client.users.cache.get('193782837604909056');
-				if (user1) user1.send(`${now} I would have tried to restart the bot now`);
-			} catch (e) {
-				return;
-			}
-			try {
-				const user2 = await client.users.cache.get('425165710847770634');
-				if (user2) user2.send(`${now} I would have tried to restart the bot now`);
-			} catch (e) {
-				return;
-			}
-
-			//return restartPokehunt();
-		} 
-			
+			return restartPokehunt();
+		}
 	}, 1000);
 };
