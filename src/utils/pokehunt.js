@@ -1,5 +1,6 @@
 const {
 	POKEHUNT_IP,
+	POKEHUNT_UPTIME_URL,
 	POKEHUNT_SSH_PORT,
 	POKEHUNT_SSH_KEY,
 	POKEHUNT_SSH_USERNAME,
@@ -16,7 +17,7 @@ const { Client: sshclient } = require('ssh2');
 let restarting = false;
 
 const getUptime = async () => {
-	return fetch(`http://${process.env.POKEHUNT_IP}:${process.env.POKEHUNT_PORT}/uptime`).then(res => {
+	return fetch(POKEHUNT_UPTIME_URL).then(res => {
 		if (res.status !== 200) return {};
 		else return res.json();
 	}).catch(() => {
