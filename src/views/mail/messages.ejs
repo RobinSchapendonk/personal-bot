@@ -27,13 +27,13 @@
 			<table class="table text-white">
 				<tbody id="messages">
 					<tr id="form"><th>
-						<form id="send_message_form" > <!-- onsubmit="sendMessage()" -->
+						<form id="send_message_form" autocomplete="off" >
 							<input type="text" id="send_message" maxlength="2000" placeholder="Send a message." required>
 						</form>
 					</th></tr>
 					<% messages.forEach(message => { %>
 						<tr><th>
-							<img src="<%= message.memberID == user.id ? user.avatar : owner.avatar%>" width="50" height="50"> <%=message.message%>
+							<img src="<%= message.memberID == user.id ? user.avatar : avatar%>" width="50" height="50"> <%=message.message%>
 						</th></tr>
 					<% }) %>
 				</tbody>
@@ -45,7 +45,7 @@
 			const socket = io();
 			const table = document.getElementById('messages');
 
-			socket.on('receiveDM', ({ from, content}) => {
+			socket.on('receiveDM', ({ from, content, }) => {
 				if (from !== '<%=user.id%>') return;
 
 				const audio = new Audio('/sounds/message.mp3');
@@ -64,25 +64,47 @@
 				return tr.appendChild(th);
 			});
 
-			document.getElementById('send_message_form').addEventListener("submit", e => {
-				e.preventDefault();
-
-				const input = document.getElementById('send_message');
-				const content = input.value;
-				input.value = '';
-				socket.emit('sendDM', { to: '<%=user.id%>', content, });
+			socket.on('confirmedSendDM', ({ to, content, id }) => {
+				console.log(id);
+				document.getElementById(id).remove();
 
 				const tr = table.insertRow(1);
 				const th = document.createElement('th');
 				const img = document.createElement('img');
 
-				img.src = "<%=owner.avatar%>";
+				img.src = "<%=avatar%>";
 				img.width = "50";
 				img.height = "50";
 
 				th.appendChild(img);
 				th.innerHTML += " " + content;
 				tr.appendChild(th);
+			});
+
+			document.getElementById('send_message_form').addEventListener("submit", e => {
+				e.preventDefault();
+
+				const now = Date.now();
+
+				const input = document.getElementById('send_message');
+				const content = input.value;
+				input.value = '';
+				socket.emit('sendDM', { to: '<%=user.id%>', content, id: now });
+
+				const tr = table.insertRow(1);
+				const th = document.createElement('th');
+				const img = document.createElement('img');
+
+				img.src = "<%=avatar%>";
+				img.width = "50";
+				img.height = "50";
+
+				th.appendChild(img);
+				th.innerHTML += " " + content;
+
+				tr.appendChild(th);
+				tr.style = "opacity: 0.5";
+				tr.id = now;
 			});
 		</script>
 	</body>

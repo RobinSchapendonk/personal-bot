@@ -17,13 +17,15 @@ module.exports = async (client) => {
 	io.on('connection', function(socket) {
 		console.log(`${socket.id} connected!`);
 
-		socket.on('sendDM', async ({ to, content }) => {
+		socket.on('sendDM', async ({ to, content, id }) => {
 			try {
 				const found = modmail.prepare('SELECT * FROM mails WHERE memberID = ? AND active = true').get([to]);
 				if (!found) return;
 
 				const user = await client.users.fetch(to);
 				user.send(content).then(message => {
+					socket.emit('confirmedSendDM', ({ to, content, id }));
+
 					modmail.prepare('INSERT INTO messages (mailID, ID, memberID, message, attachments, sentAt) VALUES (?,?,?,?,?,?)').run([found.ID, message.id, message.author.id, message.content, JSON.stringify([]), message.createdTimestamp]);
 					modmail.prepare('UPDATE mails SET lastUpdate = ? WHERE ID = ?').run([message.createdTimestamp, found.ID]);
 				});

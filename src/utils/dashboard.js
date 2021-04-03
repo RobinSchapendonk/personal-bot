@@ -114,17 +114,10 @@ app.get('/mail/:ID', CheckAuth, async (req, res) => {
 		return;
 	}
 
-	const owner = req.user;
-	try {
-		if (!owner.avatar.startsWith('http')) owner.avatar = await getProfilePic(owner);
-	} catch (e) {
-		return;
-	}
-
 	return res.render('mail/messages.ejs', {
 		messages,
 		user,
-		owner,
+		avatar: client.user.avatar && client.user.avatar.startsWith('http') ? client.user.avatar : await getProfilePic(client.user),
 	});
 });
 
