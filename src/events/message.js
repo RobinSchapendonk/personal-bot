@@ -1,7 +1,6 @@
 const {
 	CLIENT_PREFIX,
 	OWNERS,
-	POKEHUNT_OWNERS,
 } = process.env;
 
 const { join } = require('path');
@@ -9,7 +8,6 @@ const { io } = require(join(__dirname, '../utils/dashboard.js'));
 const { settings, modmail } = require(join(__dirname, '../utils/databases.js'));
 const { log } = require(join(__dirname, '../utils/functions.js'));
 const { createEmbed, getProfilePic, clean } = require(join(__dirname, '../utils/message.js'));
-const { restartPokehunt, backupPokehunt } = require(join(__dirname, '../utils/pokehunt.js'));
 
 module.exports = async (client, message) => {
 	if (message.author.bot) return;
@@ -100,18 +98,6 @@ module.exports = async (client, message) => {
 			} catch (err) {
 				message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
 			}
-		}
-
-		if (command == 'restart-pokehunt' && POKEHUNT_OWNERS.includes(message.author.id)) {
-			message.channel.send('Connecting to the server!');
-			const res = await restartPokehunt();
-			return message.channel.send(res);
-		}
-
-		if (command == 'backup-pokehunt' && POKEHUNT_OWNERS.includes(message.author.id)) {
-			message.channel.send('Connecting to the server!');
-			const res = await backupPokehunt();
-			return message.channel.send(res);
 		}
 
 		const cmd = client.commands.get(command);
