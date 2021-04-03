@@ -48,6 +48,9 @@
 			socket.on('receiveDM', ({ from, content}) => {
 				if (from !== '<%=user.id%>') return;
 
+				const audio = new Audio('/sounds/message.mp3');
+				audio.play();
+
 				const tr = table.insertRow(1);
 				const th = document.createElement('th');
 				const img = document.createElement('img');
@@ -59,7 +62,7 @@
 				th.appendChild(img);
 				th.innerHTML += " " + content;
 				return tr.appendChild(th);
-			})
+			});
 
 			document.getElementById('send_message_form').addEventListener("submit", e => {
 				e.preventDefault();
