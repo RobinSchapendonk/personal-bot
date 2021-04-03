@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "docker-compose up -d --force-recreate",
-    "start-normal": "node ."
+    "start-docker": "docker-compose up -d --force-recreate",
+    "start-normal": "npm install && node src/index.js"
   },
   "keywords": [],
   "author": "Robin Schapendonk",
@@ -18,10 +19,17 @@
     "child_process": "^1.0.2",
     "discord.js": "^12.4.1",
     "dotenv": "^8.2.0",
+    "ejs": "^3.1.6",
     "eslint": "^7.13.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "fs": "0.0.1-security",
+    "http": "0.0.1-security",
+    "passport": "^0.4.1",
+    "passport-discord": "^0.1.4",
     "path": "^0.12.7",
     "scp2": "^0.5.0",
+    "socket.io": "^4.0.1",
     "ssh2": "^0.8.9",
     "ytdl-core": "^4.4.2"
   }

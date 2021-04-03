@@ -1,4 +1,7 @@
 require('dotenv').config();
+const {
+	CLIENT_TOKEN,
+} = process.env;
 const { Client, Collection } = require('discord.js');
 const { loadCommands, loadEvents } = require('./utils/register');
 
@@ -12,5 +15,7 @@ client.userMessages = new Collection();
 (async () => {
 	await loadCommands(client);
 	await loadEvents(client);
-	await client.login(process.env.TOKEN);
+	await client.login(CLIENT_TOKEN);
 })();
+
+module.exports = { client };

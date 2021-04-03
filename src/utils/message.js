@@ -84,6 +84,14 @@ const GetChannelFromArg = (argument, channels) => {
 	});
 };
 
+const getProfilePic = (user) => {
+	if (user.avatar == null) {
+		return `https://cdn.discordapp.com/embed/avatars/${parseInt(user.discriminator) % 5}.png`;
+	} else {
+		return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+	}
+};
+
 const clean = text => {
 	if (typeof (text) === 'string') {
 		return text.replace(/`/g, '`' + String.fromCharCode(8203)).replace(/@/g, '@' + String.fromCharCode(8203));
@@ -94,5 +102,6 @@ module.exports = {
 	createEmbed,
 	GetMemberFromArg,
 	GetChannelFromArg,
+	getProfilePic,
 	clean,
 };

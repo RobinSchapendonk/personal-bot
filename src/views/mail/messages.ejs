@@ -1,0 +1,86 @@
+<html>
+	<head>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
+		<title>Dashboard</title>
+	</head>
+	<body class="bg-dark">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<div class="container-fluid">
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						<li class="nav-item">
+							<a class="nav-link" href="/panel">Panel</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="/mail">Mail</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav><br>
+
+		<div class="container">
+			<table class="table text-white">
+				<tbody id="messages">
+					<tr id="form"><th>
+						<form id="send_message_form" > <!-- onsubmit="sendMessage()" -->
+							<input type="text" id="send_message" maxlength="2000" placeholder="Send a message." required>
+						</form>
+					</th></tr>
+					<% messages.forEach(message => { %>
+						<tr><th>
+							<img src="<%= message.memberID == user.id ? user.avatar : owner.avatar%>" width="50" height="50"> <%=message.message%>
+						</th></tr>
+					<% }) %>
+				</tbody>
+			</table>
+		</div>
+
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+			const socket = io();
+			const table = document.getElementById('messages');
+
+			socket.on('receiveDM', ({ from, content}) => {
+				if (from !== '<%=user.id%>') return;
+
+				const tr = table.insertRow(1);
+				const th = document.createElement('th');
+				const img = document.createElement('img');
+
+				img.src = "<%=user.avatar%>";
+				img.width = "50";
+				img.height = "50";
+
+				th.appendChild(img);
+				th.innerHTML += " " + content;
+				return tr.appendChild(th);
+			})
+
+			document.getElementById('send_message_form').addEventListener("submit", e => {
+				e.preventDefault();
+
+				const input = document.getElementById('send_message');
+				const content = input.value;
+				input.value = '';
+				socket.emit('sendDM', { to: '<%=user.id%>', content, });
+
+				const tr = table.insertRow(1);
+				const th = document.createElement('th');
+				const img = document.createElement('img');
+
+				img.src = "<%=owner.avatar%>";
+				img.width = "50";
+				img.height = "50";
+
+				th.appendChild(img);
+				th.innerHTML += " " + content;
+				tr.appendChild(th);
+			});
+		</script>
+	</body>
+</html>

@@ -1,89 +1,120 @@
 const {
-	PREFIX,
+	CLIENT_PREFIX,
 	OWNERS,
 	POKEHUNT_OWNERS,
 } = process.env;
 
 const { join } = require('path');
-const { settings } = require(join(__dirname, '../utils/databases.js'));
+const { io } = require(join(__dirname, '../utils/dashboard.js'));
+const { settings, modmail } = require(join(__dirname, '../utils/databases.js'));
 const { log } = require(join(__dirname, '../utils/functions.js'));
-const { clean } = require(join(__dirname, '../utils/message.js'));
+const { createEmbed, getProfilePic, clean } = require(join(__dirname, '../utils/message.js'));
 const { restartPokehunt, backupPokehunt } = require(join(__dirname, '../utils/pokehunt.js'));
 
 module.exports = async (client, message) => {
-	if (message.author.bot || message.channel.type === 'dm') return;
+	if (message.author.bot) return;
 
-	const messageProtection = settings.prepare('SELECT global, user FROM messageProtection WHERE guild = ?').get(message.guild.id);
-	const disabled = settings.prepare('SELECT * FROM ignoreChannels WHERE guild = ? AND channel = ?').get([message.guild.id, message.channel.id]);
-	if (!disabled) {
-		if (messageProtection && messageProtection.global) {
-			let cooldown = messageProtection.global;
-			if (cooldown == 'default') cooldown = 0.1;
-			else cooldown = parseInt(cooldown);
-
-			const lastMessage = client.messages.get(message.channel.id) || 0;
-			const duration = (message.createdAt.getTime() - new Date(lastMessage).getTime()) / 1000;
-
-			if (duration < cooldown) {
-				try {
-					await message.delete();
-					log('global', `delete msg from ${message.author.tag}!`, 'green');
-				} catch (e) {
-					log('global', `delete msg from ${message.author.tag}!`, 'red');
-				}
-			}
-			client.messages.set(message.channel.id, message.createdAt);
-		}
-
-		if (messageProtection && messageProtection.user) {
-			let cooldown = messageProtection.user;
-			if (cooldown == 'default') cooldown = 0.5;
-			else cooldown = parseInt(cooldown);
-
-			const lastMessage = client.userMessages.get(message.author.id) || 0;
-			const duration = (message.createdAt.getTime() - new Date(lastMessage).getTime()) / 1000;
-
-			if (duration < cooldown) {
-				try {
-					await message.delete();
-					log('user', `delete msg from ${message.author.tag}!`, 'green');
-				} catch (e) {
-					log('user', `delete msg from ${message.author.tag}!`, 'red');
-				}
-			}
-			client.userMessages.set(message.author.id, message.createdAt);
-		}
-	}
-
-	if (!message.content.startsWith(PREFIX)) return;
-	const args = message.content.slice(PREFIX.length).trim().split(/ +/g);
-	const command = args.shift().toLowerCase();
-
-	if (command == 'eval' && OWNERS.includes(message.author.id)) {
+	if (message.channel.type == 'dm') {
 		try {
-			const code = args.join(' ');
-			let evaled = eval(code);
+			let found = modmail.prepare('SELECT * FROM mails WHERE memberID = ? AND active = true').get([message.author.id]);
+			const avatar = await getProfilePic(message.author);
 
-			if (typeof evaled !== 'string') { evaled = require('util').inspect(evaled); }
+			if (!found) {
+				modmail.prepare('INSERT INTO mails (memberID, active) VALUES (?,true)').run([message.author.id]);
+				found = modmail.prepare('SELECT * FROM mails WHERE memberID = ? AND active = true').get([message.author.id]);
 
-			message.channel.send(clean(evaled), { code: 'xl' });
-		} catch (err) {
-			message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
+				const embed = createEmbed();
+				embed.setAuthor(`Hello, ${message.author.tag}`, avatar);
+				embed.setFooter('ModMail ticket created!');
+
+				await message.author.send(embed);
+			}
+
+			const attachments = message.attachments.array();
+			const files = [];
+			attachments.map(attachment => files.push(attachment.url));
+
+			modmail.prepare('INSERT INTO messages (mailID, ID, memberID, message, attachments, sentAt) VALUES (?,?,?,?,?,?)').run([found.ID, message.id, message.author.id, message.content, JSON.stringify(files), message.createdTimestamp]);
+			modmail.prepare('UPDATE mails SET lastUpdate = ? WHERE ID = ?').run([message.createdTimestamp, found.ID]);
+			io.emit('receiveDM', ({ from: message.author.id, content: message.content }));
+			return message.react('✅');
+		} catch (e) {
+			return console.log(e);
 		}
-	}
+	} else {
 
-	if (command == 'restart-pokehunt' && POKEHUNT_OWNERS.includes(message.author.id)) {
-		message.channel.send('Connecting to the server!');
-		const res = await restartPokehunt();
-		return message.channel.send(res);
-	}
+		const messageProtection = settings.prepare('SELECT global, user FROM messageProtection WHERE guild = ?').get(message.guild.id);
+		const disabled = settings.prepare('SELECT * FROM ignoreChannels WHERE guild = ? AND channel = ?').get([message.guild.id, message.channel.id]);
+		if (!disabled) {
+			if (messageProtection && messageProtection.global) {
+				let cooldown = messageProtection.global;
+				if (cooldown == 'default') cooldown = 0.1;
+				else cooldown = parseInt(cooldown);
 
-	if (command == 'backup-pokehunt' && POKEHUNT_OWNERS.includes(message.author.id)) {
-		message.channel.send('Connecting to the server!');
-		const res = await backupPokehunt();
-		return message.channel.send(res);
-	}
+				const lastMessage = client.messages.get(message.channel.id) || 0;
+				const duration = (message.createdAt.getTime() - new Date(lastMessage).getTime()) / 1000;
 
-	const cmd = client.commands.get(command);
-	if (cmd) cmd.run(client, message, args);
+				if (duration < cooldown) {
+					try {
+						await message.delete();
+						log('global', `delete msg from ${message.author.tag}!`, 'green');
+					} catch (e) {
+						log('global', `delete msg from ${message.author.tag}!`, 'red');
+					}
+				}
+				client.messages.set(message.channel.id, message.createdAt);
+			}
+
+			if (messageProtection && messageProtection.user) {
+				let cooldown = messageProtection.user;
+				if (cooldown == 'default') cooldown = 0.5;
+				else cooldown = parseInt(cooldown);
+
+				const lastMessage = client.userMessages.get(message.author.id) || 0;
+				const duration = (message.createdAt.getTime() - new Date(lastMessage).getTime()) / 1000;
+
+				if (duration < cooldown) {
+					try {
+						await message.delete();
+						log('user', `delete msg from ${message.author.tag}!`, 'green');
+					} catch (e) {
+						log('user', `delete msg from ${message.author.tag}!`, 'red');
+					}
+				}
+				client.userMessages.set(message.author.id, message.createdAt);
+			}
+		}
+
+		if (!message.content.startsWith(CLIENT_PREFIX)) return;
+		const args = message.content.slice(CLIENT_PREFIX.length).trim().split(/ +/g);
+		const command = args.shift().toLowerCase();
+
+		if (command == 'eval' && OWNERS.includes(message.author.id)) {
+			try {
+				const code = args.join(' ');
+				let evaled = eval(code);
+
+				if (typeof evaled !== 'string') { evaled = require('util').inspect(evaled); }
+
+				message.channel.send(clean(evaled), { code: 'xl' });
+			} catch (err) {
+				message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
+			}
+		}
+
+		if (command == 'restart-pokehunt' && POKEHUNT_OWNERS.includes(message.author.id)) {
+			message.channel.send('Connecting to the server!');
+			const res = await restartPokehunt();
+			return message.channel.send(res);
+		}
+
+		if (command == 'backup-pokehunt' && POKEHUNT_OWNERS.includes(message.author.id)) {
+			message.channel.send('Connecting to the server!');
+			const res = await backupPokehunt();
+			return message.channel.send(res);
+		}
+
+		const cmd = client.commands.get(command);
+		if (cmd) cmd.run(client, message, args);
+	}
 };

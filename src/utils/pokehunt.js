@@ -38,63 +38,71 @@ const checkOnlineStatus = async () => {
 };
 
 const restartPokehunt = async () => {
-	// eslint-disable-next-line no-async-promise-executor
-	return new Promise(async (resolve) => {
+	return new Promise((resolve) => {
 		if (restarting) return resolve('PokéHunt is already restarting!');
 		restarting = true;
 
-		const embed = new MessageEmbed();
-		embed.setTimestamp();
-		embed.setDescription('Restarting PokéHunt!');
-		hook.send(embed);
-
-		const connection = new sshclient();
-		connection.connect({
-			host: POKEHUNT_IP,
-			port: POKEHUNT_SSH_PORT,
-			username: POKEHUNT_SSH_USERNAME,
-			privateKey: require('fs').readFileSync(POKEHUNT_SSH_KEY),
-			passphrase: POKEHUNT_SSH_PASSPHRASE,
-		});
-
-		connection.on('ready', () => {
-			connection.exec(POKEHUNT_SSH_RESTART_COMMAND, (err, stream) => {
-				stream.on('close', () => {
-					resolve('PokéHunt has been restarted!');
-
-					const handle = setInterval(async () => {
-						if(await checkOnlineStatus()) {
-							restarting = false;
-							clearInterval(handle);
-							return connection.end();
-						}
-					}, 1000);
-				}).resume();
+		try {
+			const connection = new sshclient();
+			connection.connect({
+				host: POKEHUNT_IP,
+				port: POKEHUNT_SSH_PORT,
+				username: POKEHUNT_SSH_USERNAME,
+				privateKey: require('fs').readFileSync(POKEHUNT_SSH_KEY),
+				passphrase: POKEHUNT_SSH_PASSPHRASE,
 			});
-		});
+
+			connection.on('ready', () => {
+				const embed = new MessageEmbed();
+				embed.setTimestamp();
+				embed.setDescription('Restarting PokéHunt!');
+				hook.send(embed);
+
+				connection.exec(POKEHUNT_SSH_RESTART_COMMAND, (err, stream) => {
+					stream.on('close', () => {
+						resolve('PokéHunt has been restarted!');
+
+						const handle = setInterval(async () => {
+							if(await checkOnlineStatus()) {
+								restarting = false;
+								clearInterval(handle);
+								return connection.end();
+							}
+						}, 1000);
+					}).resume();
+				});
+			});
+		} catch (e) {
+			return resolve('Can\'t connect to the server!');
+		}
 	});
 };
 
 const backupPokehunt = async () => {
 	return new Promise((resolve) => {
-		const connection = new sshclient();
-		connection.connect({
-			host: POKEHUNT_IP,
-			port: POKEHUNT_SSH_PORT,
-			username: POKEHUNT_SSH_USERNAME,
-			privateKey: require('fs').readFileSync(POKEHUNT_SSH_KEY),
-			passphrase: POKEHUNT_SSH_PASSPHRASE,
-		});
 
-		connection.on('ready', () => {
-			connection.exec(POKEHUNT_SSH_BACKUP_COMMAND, (err, stream) => {
-				stream.on('close', () => {
-					resolve('Backup has been made!');
-					downloadBackup();
-					return connection.end();
-				}).resume();
+		try {
+			const connection = new sshclient();
+			connection.connect({
+				host: POKEHUNT_IP,
+				port: POKEHUNT_SSH_PORT,
+				username: POKEHUNT_SSH_USERNAME,
+				privateKey: require('fs').readFileSync(POKEHUNT_SSH_KEY),
+				passphrase: POKEHUNT_SSH_PASSPHRASE,
 			});
-		});
+
+			connection.on('ready', () => {
+				connection.exec(POKEHUNT_SSH_BACKUP_COMMAND, (err, stream) => {
+					stream.on('close', () => {
+						resolve('Backup has been made!');
+						downloadBackup();
+						return connection.end();
+					}).resume();
+				});
+			});
+		} catch (e) {
+			return resolve('Can\'t connect to the server!');
+		}
 	});
 };
 
