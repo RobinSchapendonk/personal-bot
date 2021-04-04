@@ -15,7 +15,7 @@ module.exports = async (client) => {
 	console.log(`${client.user.tag} has started!`);
 
 	io.on('connection', function(socket) {
-		console.log(`${socket.id} connected!`);
+		// console.log(`${socket.id} connected!`);
 
 		socket.on('sendDM', async ({ to, content, id }) => {
 			try {

@@ -1,6 +1,6 @@
 const { join } = require('path');
 const { settings } = require(join(__dirname, '../utils/databases.js'));
-const { log } = require(join(__dirname, '../utils/functions.js'));
+// const { log } = require(join(__dirname, '../utils/functions.js'));
 
 module.exports = async (client, member) => {
 	const data = settings.prepare('SELECT cooldown FROM joinProtection WHERE guild = ?').get(member.guild.id);
@@ -19,13 +19,11 @@ module.exports = async (client, member) => {
 				await member.send(`A cooldown is active in this server, please join again over ${cooldown} seconds!`);
 			} catch (e) { return; }
 			member.kick('Member joined too soon!');
-			log('join', `kick ${member.user.tag}`, 'green');
+			// log('join', `kick ${member.user.tag}`, 'green');
 		} else {
-			log('join', `kick ${member.user.tag}`, 'red');
+			// log('join', `kick ${member.user.tag}`, 'red');
 		}
 	}
 
-	client.joins.set(member.guild.id, member.joinedAt);
-
-	console.log(`${member.displayName}, just joined ${member.guild.name}`);
+	return client.joins.set(member.guild.id, member.joinedAt);
 };

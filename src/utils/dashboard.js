@@ -72,7 +72,7 @@ app.get('/mail', CheckAuth, async (req, res) => {
 
 	const mails = modmail.prepare('SELECT * FROM mails WHERE active = true ORDER BY lastUpdate DESC').all();
 	if (mails.length == 0) {
-		return res.render('mail.ejs', {
+		return res.render('mail/mail.ejs', {
 			username: req.user.username,
 			mails: [],
 		});

@@ -15,7 +15,6 @@ module.exports.run = async (client, message, args) => {
 
 		return message.channel.send(`${channel} is ${oldDisabled ? 'enabled' : 'disabled'}!`);
 	}).catch(invalidChannelError => {
-		console.log(invalidChannelError);
 		return message.channel.send(invalidChannelError);
 	});
 };

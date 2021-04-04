@@ -6,7 +6,7 @@ const {
 const { join } = require('path');
 const { io } = require(join(__dirname, '../utils/dashboard.js'));
 const { settings, modmail } = require(join(__dirname, '../utils/databases.js'));
-const { log } = require(join(__dirname, '../utils/functions.js'));
+// const { log } = require(join(__dirname, '../utils/functions.js'));
 const { createEmbed, getProfilePic, clean } = require(join(__dirname, '../utils/message.js'));
 
 module.exports = async (client, message) => {
@@ -37,7 +37,7 @@ module.exports = async (client, message) => {
 			io.emit('receiveDM', ({ from: message.author.id, content: message.content }));
 			return message.react('✅');
 		} catch (e) {
-			return console.log(e);
+			return;
 		}
 	} else {
 
@@ -55,9 +55,9 @@ module.exports = async (client, message) => {
 				if (duration < cooldown) {
 					try {
 						await message.delete();
-						log('global', `delete msg from ${message.author.tag}!`, 'green');
+						// log('global', `delete msg from ${message.author.tag}!`, 'green');
 					} catch (e) {
-						log('global', `delete msg from ${message.author.tag}!`, 'red');
+						// log('global', `delete msg from ${message.author.tag}!`, 'red');
 					}
 				}
 				client.messages.set(message.channel.id, message.createdAt);
@@ -74,9 +74,9 @@ module.exports = async (client, message) => {
 				if (duration < cooldown) {
 					try {
 						await message.delete();
-						log('user', `delete msg from ${message.author.tag}!`, 'green');
+						// log('user', `delete msg from ${message.author.tag}!`, 'green');
 					} catch (e) {
-						log('user', `delete msg from ${message.author.tag}!`, 'red');
+						// log('user', `delete msg from ${message.author.tag}!`, 'red');
 					}
 				}
 				client.userMessages.set(message.author.id, message.createdAt);

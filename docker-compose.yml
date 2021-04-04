@@ -13,4 +13,4 @@ services:
       - ./:/home/node/bot
     command: bash -c "npm i && node ."
     ports:
-      - 3000:3000
+      - 8000:8000

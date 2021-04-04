@@ -8,7 +8,7 @@ module.exports.run = async (client, message) => {
 	if (!message.member.voice) return message.channel.send('You need to be in a voice channel!');
 
 	const channel = await client.channels.fetch(message.member.voice.channelID);
-	if (!channel || !channel.joinable) return console.log('not joinable');
+	if (!channel || !channel.joinable) return;
 
 	let serverQueue = client.queue.get(message.member.guild.id);
 	if (serverQueue && serverQueue.voiceChannel.id !== channel.id) {

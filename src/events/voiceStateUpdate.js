@@ -8,7 +8,7 @@ module.exports = async (client, oldState, newState) => {
 	if (!newState.channelID) return;
 
 	const channel = await client.channels.fetch(newState.channelID);
-	if (!channel || !channel.joinable) return console.log('not joinable');
+	if (!channel || !channel.joinable) return;
 
 	let serverQueue = client.queue.get(newState.member.guild.id);
 	if (oldState.channelID !== newState.channelID) {
