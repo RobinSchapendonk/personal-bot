@@ -14,7 +14,7 @@ punishments.prepare('CREATE TABLE if not exists kick (uuid TEXT, guild TEXT, mem
 punishments.prepare('CREATE TABLE if not exists warn (uuid TEXT, guild TEXT, member TEXT, moderator TEXT, reason TEXT, time TEXT)').run();
 
 modmail.prepare('CREATE TABLE if not exists mails (ID INTEGER PRIMARY KEY autoincrement, memberID TEXT, active BOOLEAN, lastUpdate TEXT)').run();
-modmail.prepare('CREATE TABLE if not exists messages (mailID INTEGER, ID INTEGER PRIMARY KEY, memberID TEXT, message TEXT, attachments TEXT, sentAt TEXT)').run();
+modmail.prepare('CREATE TABLE if not exists messages (mailID INTEGER, ID TEXT PRIMARY KEY, memberID TEXT, message TEXT, attachments TEXT, sentAt TEXT)').run();
 
 module.exports = {
 	settings,

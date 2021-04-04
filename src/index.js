@@ -5,7 +5,7 @@ const {
 const { Client, Collection } = require('discord.js');
 const { loadCommands, loadEvents } = require('./utils/register');
 
-const client = new Client({ partials: ['CHANNEL'] });
+const client = new Client({ partials: ['CHANNEL', 'MESSAGE'] });
 client.commands = new Collection();
 client.queue = new Collection();
 client.joins = new Collection();

@@ -33,7 +33,7 @@
 						<p class="text-muted" id="typing"></p>
 					</th></tr>
 					<% messages.forEach(message => { %>
-						<tr><th>
+						<tr id="<%=message.ID%>"><th>
 							<img src="<%= message.memberID == user.id ? user.avatar : avatar%>" width="50" height="50"> <%=message.message%>
 						</th></tr>
 					<% }) %>
@@ -46,7 +46,7 @@
 			const socket = io();
 			const table = document.getElementById('messages');
 
-			socket.on('receiveDM', ({ from, content, }) => {
+			socket.on('receiveDM', ({ from, content, id }) => {
 				if (from !== '<%=user.id%>') return;
 
 				document.getElementById('typing').innerHTML = "";
@@ -54,22 +54,32 @@
 				const audio = new Audio('/sounds/message.mp3');
 				audio.play();
 
-				return createMessage('<%=user.avatar%>', content);
+				return createMessage('<%=user.avatar%>', content, id);
 			});
 
-			socket.on('confirmedSendDM', ({ to, content, id }) => {
-				document.getElementById(id).remove();
-				return createMessage('<%=avatar%>', content);
+			socket.on('deleteDM', ({ from, id }) => {
+				if (from !== '<%=user.id%>') return;
+
+				return document.getElementById(id).remove();
+			});
+
+			socket.on('confirmedSendDM', ({ to, content, sentAt, id }) => {
+				if (to !== '<%=user.id%>') return;
+
+				document.getElementById(sentAt).remove();
+				return createMessage('<%=avatar%>', content, id);
 			});
 
 			socket.on('typingStart', ({ id }) => {
 				if (id !== '<%=user.id%>') return;
-				document.getElementById('typing').innerHTML = "Typing...";
+
+				return document.getElementById('typing').innerHTML = "Typing...";
 			});
 
 			socket.on('typingStop', ({ id }) => {
 				if (id !== '<%=user.id%>') return;
-				document.getElementById('typing').innerHTML = "";
+
+				return document.getElementById('typing').innerHTML = "";
 			});
 
 			document.getElementById('send_message_form').addEventListener("submit", e => {
@@ -80,12 +90,12 @@
 				const input = document.getElementById('send_message');
 				const content = input.value;
 				input.value = '';
-				socket.emit('sendDM', { to: '<%=user.id%>', content, id: now });
+				socket.emit('sendDM', { to: '<%=user.id%>', content, sentAt: now });
 
-				return createMessage('<%=avatar%>', content, now);
+				return createMessage('<%=avatar%>', content, now, '0.5');
 			});
 
-			const createMessage = (avatar, content, id) => {
+			const createMessage = (avatar, content, id, opacity) => {
 				const tr = table.insertRow(1);
 				const th = document.createElement('th');
 				const img = document.createElement('img');
@@ -98,7 +108,7 @@
 				th.innerHTML += " " + content;
 
 				tr.appendChild(th);
-				if (id) tr.style = "opacity: 0.5";
+				if (opacity) tr.style = `opacity: ${opacity}`;
 				if (id) tr.id = id;
 			}
 		</script>

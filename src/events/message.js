@@ -32,9 +32,9 @@ module.exports = async (client, message) => {
 			const files = [];
 			attachments.map(attachment => files.push(attachment.url));
 
-			modmail.prepare('INSERT INTO messages (mailID, ID, memberID, message, attachments, sentAt) VALUES (?,?,?,?,?,?)').run([found.ID, message.id, message.author.id, message.content, JSON.stringify(files), message.createdTimestamp]);
+			modmail.prepare('INSERT INTO messages (mailID, ID, memberID, message, attachments, sentAt) VALUES (?,?,?,?,?,?)').run([found.ID, parseInt(message.id).toString(36), message.author.id, message.content, JSON.stringify(files), message.createdTimestamp]);
 			modmail.prepare('UPDATE mails SET lastUpdate = ? WHERE ID = ?').run([message.createdTimestamp, found.ID]);
-			io.emit('receiveDM', ({ from: message.author.id, content: message.content }));
+			io.emit('receiveDM', ({ from: message.author.id, content: message.content, id: parseInt(message.id).toString(36) }));
 			return message.react('✅');
 		} catch (e) {
 			return;

@@ -106,6 +106,8 @@ app.get('/mail/:ID', CheckAuth, async (req, res) => {
 	const mail = modmail.prepare('SELECT * FROM mails WHERE ID = ?').get([req.params.ID]);
 	const messages = modmail.prepare('SELECT * FROM messages WHERE mailID = ? ORDER BY sentAt DESC').all([req.params.ID]);
 
+	console.log(messages);
+
 	let user = null;
 	try {
 		user = await client.users.fetch(mail.memberID);
@@ -113,6 +115,8 @@ app.get('/mail/:ID', CheckAuth, async (req, res) => {
 	} catch (e) {
 		return;
 	}
+
+	console.log(messages);
 
 	return res.render('mail/messages.ejs', {
 		messages,
