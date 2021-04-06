@@ -4,10 +4,6 @@ My personal bot which I use in every server I own.
 
 ## Installation
 
-This is NOT made to be run by yourself, as it includes some private things for PokéHunt. If you remove those part it will probably just be fine.
-
-## Usage
-
 #### With docker
 Install [docker](https://docs.docker.com/get-docker/) and [docker-compose](https://docs.docker.com/compose/install/).
 Fill in the `.env.example` and run `npm start` or `npm run start-docker.
