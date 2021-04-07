@@ -4,7 +4,7 @@ const {
 } = process.env;
 
 const { join } = require('path');
-const { io } = require(join(__dirname, '../utils/dashboard.js'));
+const { io, getUnread } = require(join(__dirname, '../utils/dashboard.js'));
 const { settings, modmail } = require(join(__dirname, '../utils/databases.js'));
 // const { log } = require(join(__dirname, '../utils/functions.js'));
 const { createEmbed, getProfilePic, clean } = require(join(__dirname, '../utils/message.js'));
@@ -33,8 +33,11 @@ module.exports = async (client, message) => {
 			attachments.map(attachment => files.push(attachment.url));
 
 			modmail.prepare('INSERT INTO messages (mailID, ID, memberID, message, attachments, sentAt) VALUES (?,?,?,?,?,?)').run([found.ID, parseInt(message.id).toString(36), message.author.id, message.content, JSON.stringify(files), message.createdTimestamp]);
-			modmail.prepare('UPDATE mails SET lastUpdate = ? WHERE ID = ?').run([message.createdTimestamp, found.ID]);
+			modmail.prepare('UPDATE mails SET lastUpdate = ?, unread = true WHERE ID = ?').run([message.createdTimestamp, found.ID]);
+
 			io.emit('receiveDM', ({ from: message.author.id, content: message.content, id: parseInt(message.id).toString(36) }));
+			io.emit('unread', ({ from: message.author.id, unread: getUnread() }));
+
 			return message.react('✅');
 		} catch (e) {
 			return;

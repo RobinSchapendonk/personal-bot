@@ -18,7 +18,7 @@ module.exports = async (client) => {
 					socket.emit('confirmedSendDM', ({ to, content, sentAt, id: parseInt(message.id).toString(36) }));
 
 					modmail.prepare('INSERT INTO messages (mailID, ID, memberID, message, attachments, sentAt) VALUES (?,?,?,?,?,?)').run([found.ID, parseInt(message.id).toString(36), message.author.id, message.content, JSON.stringify([]), message.createdTimestamp]);
-					modmail.prepare('UPDATE mails SET lastUpdate = ? WHERE ID = ?').run([message.createdTimestamp, found.ID]);
+					modmail.prepare('UPDATE mails SET lastUpdate = ?, unread = true WHERE ID = ?').run([message.createdTimestamp, found.ID]);
 				});
 			} catch (e) {
 				return;

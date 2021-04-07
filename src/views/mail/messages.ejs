@@ -16,7 +16,7 @@
 							<a class="nav-link" href="/panel">Panel</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="/mail">Mail</a>
+							<a class="nav-link" href="/mail" id="unread">Mail (<%=unread%>)</a>
 						</li>
 					</ul>
 				</div>
@@ -42,8 +42,8 @@
 		</div>
 
 		<script src="/socket.io/socket.io.js"></script>
+		<script src="/js/main.js"></script>
 		<script>
-			const socket = io();
 			const table = document.getElementById('messages');
 
 			socket.on('receiveDM', ({ from, content, id }) => {
@@ -110,7 +110,7 @@
 				tr.appendChild(th);
 				if (opacity) tr.style = `opacity: ${opacity}`;
 				if (id) tr.id = id;
-			}
+			};
 		</script>
 	</body>
 </html>

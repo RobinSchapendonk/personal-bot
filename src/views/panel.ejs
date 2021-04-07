@@ -16,7 +16,7 @@
 							<a class="nav-link active" aria-current="page" href="/panel">Panel</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="/mail">Mail</a>
+							<a class="nav-link" href="/mail" id="unread">Mail (<%=unread%>)</a>
 						</li>
 					</ul>
 				</div>
@@ -26,5 +26,8 @@
 		<div class="container text-white">
 			<h1>Hello <%=username%></h1>
 		</div>
+		
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="/js/main.js"></script>
 	</body>
 </html>

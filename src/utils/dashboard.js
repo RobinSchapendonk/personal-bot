@@ -26,6 +26,11 @@ const CheckAuth = (req, res, next) => {
 	else return res.redirect('/login');
 };
 
+const getUnread = () => {
+	const mails = modmail.prepare('SELECT COUNT(*) FROM mails WHERE unread = true').get();
+	return mails['COUNT(*)'];
+};
+
 passport.serializeUser((user, done) => {
 	done(null, user);
 });
@@ -63,17 +68,23 @@ app.get('/logout', CheckAuth, async function(req, res) {
 });
 app.get('/panel', CheckAuth, (req, res) => {
 	if(!OWNERS.includes(req.user.id)) return res.redirect('/logout');
+
+	const unread = getUnread();
+
 	return res.render('panel.ejs', {
+		unread,
 		username: req.user.username,
 	});
 });
 app.get('/mail', CheckAuth, async (req, res) => {
 	if(!OWNERS.includes(req.user.id)) return res.redirect('/logout');
 
+	const unread = getUnread();
+
 	const mails = modmail.prepare('SELECT * FROM mails WHERE active = true ORDER BY lastUpdate DESC').all();
 	if (mails.length == 0) {
 		return res.render('mail/mail.ejs', {
-			username: req.user.username,
+			unread,
 			mails: [],
 		});
 	}
@@ -95,6 +106,7 @@ app.get('/mail', CheckAuth, async (req, res) => {
 
 		if (i == mails.length - 1) {
 			return res.render('mail/mail.ejs', {
+				unread,
 				mails: results,
 			});
 		}
@@ -106,7 +118,9 @@ app.get('/mail/:ID', CheckAuth, async (req, res) => {
 	const mail = modmail.prepare('SELECT * FROM mails WHERE ID = ?').get([req.params.ID]);
 	const messages = modmail.prepare('SELECT * FROM messages WHERE mailID = ? ORDER BY sentAt DESC').all([req.params.ID]);
 
-	console.log(messages);
+	modmail.prepare('UPDATE mails SET unread = false WHERE ID = ?').run([req.params.ID]);
+
+	const unread = getUnread();
 
 	let user = null;
 	try {
@@ -116,12 +130,11 @@ app.get('/mail/:ID', CheckAuth, async (req, res) => {
 		return;
 	}
 
-	console.log(messages);
-
 	return res.render('mail/messages.ejs', {
 		messages,
 		user,
 		avatar: client.user.avatar && client.user.avatar.startsWith('http') ? client.user.avatar : await getProfilePic(client.user),
+		unread,
 	});
 });
 
@@ -129,4 +142,4 @@ http.listen(PORT, () => {
 	return console.log(`listening on ${BASE_URL}`);
 });
 
-module.exports = { io };
+module.exports = { io, getUnread };

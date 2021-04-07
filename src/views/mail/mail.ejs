@@ -16,7 +16,7 @@
 							<a class="nav-link" href="/panel">Panel</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="/mail">Mail</a>
+							<a class="nav-link active" aria-current="page" href="/mail" id="unread">Mail (<%=unread%>)</a>
 						</li>
 					</ul>
 				</div>
@@ -28,7 +28,8 @@
 				<tbody id="mails">
 					<% mails.forEach(mail => { %>
 						<tr><th>
-							<a href="/mail/<%=mail.ID%>" ><img src="<%=mail.avatar%>" width="50" height="50"> <%=mail.tag%></a>
+							<a href="/mail/<%=mail.ID%>"><img src="<%=mail.avatar%>" width="50" height="50"> <%=mail.tag%></a>
+							<span id="mail-<%=mail.memberID%>" class="badge bg-secondary" <%=mail.unread == '1' ? "" : 'style=display:none;'%>>Unread</span>
 						</th></tr>
 					<% }) %>
 				</tbody>
@@ -36,5 +37,6 @@
 		</div>
 
 		<script src="/socket.io/socket.io.js"></script>
+		<script src="/js/main.js"></script>
 	</body>
 </html>
