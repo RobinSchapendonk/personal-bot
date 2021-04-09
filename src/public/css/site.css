@@ -1,0 +1,70 @@
+#particles-js {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden;
+    background-size: cover;
+    background-position: 50% 50%;
+    position: fixed;
+    z-index: -1;
+    top: 0; right: 0; bottom: 0; left: 0;
+}
+
+@media (max-width: 575px) {
+    .card-group>.card {
+        flex: 0 100%;
+        margin: 0 auto;
+        float: none;
+    }
+
+    .text {
+        font-size: 25px;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 766px) {
+    .card-group>.card {
+        flex: 0 100%;
+        margin: 0 auto;
+        float: none;
+    }
+
+    .text {
+        font-size: 25px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .card-group>.card {
+        flex: 0 50%;
+        margin: 0 auto;
+        float: none;
+    }
+
+    .text {
+        font-size: 25px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .card-group>.card {
+        flex: 0 50%;
+        margin: 0 auto;
+        float: none;
+    }
+
+    .text {
+        font-size: 25px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .card-group>.card {
+        flex: 0 25%;
+        margin: 0 auto;
+        float: none;
+    }
+
+    .text {
+        font-size: 25px;
+    }
+}

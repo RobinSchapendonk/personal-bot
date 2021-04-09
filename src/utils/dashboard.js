@@ -138,6 +138,16 @@ app.get('/mail/:ID', CheckAuth, async (req, res) => {
 	});
 });
 
+app.get('/', (req, res) => {
+	return res.sendFile(join(__dirname, '../views/personal/index.html'));
+});
+app.get('/about', (req, res) => {
+	return res.sendFile(join(__dirname, '../views/personal/about.html'));
+});
+app.get('/projects', (req, res) => {
+	return res.sendFile(join(__dirname, '../views/personal/projects.html'));
+});
+
 http.listen(PORT, () => {
 	return console.log(`listening on ${BASE_URL}`);
 });
