@@ -1,6 +1,6 @@
 const { join } = require('path');
 const { modmail } = require(join(__dirname, '../utils/databases.js'));
-const { io } = require(join(__dirname, '../utils/dashboard.js'));
+const { io, getUnread } = require(join(__dirname, '../utils/dashboard.js'));
 
 module.exports = async (client) => {
 	console.log(`${client.user.tag} has started!`);
@@ -34,6 +34,7 @@ module.exports = async (client) => {
 				user.send('[BOT] Your ticket has been archived!');
 
 				modmail.prepare('UPDATE mails SET active = false WHERE ID = ?').run([id]);
+				io.emit('unread', ({ unread: getUnread() }));
 				return socket.emit('closeDM', ({ id }));
 			} catch (e) {
 				return;

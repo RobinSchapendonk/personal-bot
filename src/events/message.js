@@ -7,7 +7,7 @@ const { join } = require('path');
 const { io, getUnread } = require(join(__dirname, '../utils/dashboard.js'));
 const { settings, modmail } = require(join(__dirname, '../utils/databases.js'));
 // const { log } = require(join(__dirname, '../utils/functions.js'));
-const { clean } = require(join(__dirname, '../utils/message.js'));
+const { getProfilePic, clean } = require(join(__dirname, '../utils/message.js'));
 
 module.exports = async (client, message) => {
 	if (message.author.bot) return;
@@ -19,6 +19,9 @@ module.exports = async (client, message) => {
 			if (!found) {
 				modmail.prepare('INSERT INTO mails (memberID, active) VALUES (?,true)').run([message.author.id]);
 				found = modmail.prepare('SELECT * FROM mails WHERE memberID = ? AND active = true').get([message.author.id]);
+
+				const avatar = getProfilePic(message.author);
+				io.emit('createDM', ({ id: found.ID, memberID: message.author.id, tag: message.author.tag, avatar }));
 
 				await message.author.send('[BOT] Your ticket has been created!');
 			}

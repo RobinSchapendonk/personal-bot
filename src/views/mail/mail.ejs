@@ -29,14 +29,14 @@
 				<tbody id="mails">
 					<% mails.forEach(mail => { %>
 						<tr id="<%=mail.ID%>">
-						<th>
-							<a href="/mail/<%=mail.ID%>"><img src="<%=mail.avatar%>" width="50" height="50"> <%=mail.tag%></a>
-							<span id="mail-<%=mail.memberID%>" class="badge bg-secondary" <%=mail.unread == '1' ? "" : 'style=display:none;'%>>Unread</span>
-						</th>
-						<th>
-							<button type="button" class="btn btn btn-danger" onclick="socket.emit('closeDM', { id: '<%=mail.ID%>' });">close</button>
-						</th>
-					</tr>
+							<th>
+								<a href="/mail/<%=mail.ID%>"><img src="<%=mail.avatar%>" width="50" height="50"> <%=mail.tag%></a>
+								<span id="mail-<%=mail.memberID%>" class="badge bg-secondary" <%=mail.unread == '1' ? "" : 'style=display:none;'%>>Unread</span>
+							</th>
+							<th>
+								<button type="button" class="btn btn btn-danger" onclick="socket.emit('closeDM', { id: '<%=mail.ID%>' });">close</button>
+							</th>
+						</tr>
 					<% }) %>
 				</tbody>
 			</table>
@@ -44,8 +44,25 @@
 
 		<script src="/js/main.js"></script>
 		<script>
+			const table = document.getElementById('mails');
+
 			socket.on('closeDM', ({ id }) => {
 				document.getElementById(id).remove();
+			});
+
+			socket.on('createDM', ({ id, memberID, tag, avatar, }) => {
+				const tr = table.insertRow(0);
+				tr.id = id;
+
+				const th = document.createElement('th');
+				th.innerHTML += `<a href="/mail/${id}"><img src="${avatar}" width="50" height="50"> ${tag}</a> `;
+				th.innerHTML += `<span id="mail-${memberID}" class="badge bg-secondary">Unread</span>`;
+
+				const th2 = document.createElement('th');
+				th2.innerHTML += `<button type="button" class="btn btn btn-danger" onclick="socket.emit('closeDM', { id: '${id}' });">close</button>`;
+
+				tr.appendChild(th);
+				return tr.appendChild(th2);
 			});
 		</script>
 	</body>
