@@ -7,7 +7,7 @@ const { join } = require('path');
 const { io, getUnread } = require(join(__dirname, '../utils/dashboard.js'));
 const { settings, modmail } = require(join(__dirname, '../utils/databases.js'));
 // const { log } = require(join(__dirname, '../utils/functions.js'));
-const { createEmbed, getProfilePic, clean } = require(join(__dirname, '../utils/message.js'));
+const { clean } = require(join(__dirname, '../utils/message.js'));
 
 module.exports = async (client, message) => {
 	if (message.author.bot) return;
@@ -15,17 +15,12 @@ module.exports = async (client, message) => {
 	if (message.channel.type == 'dm') {
 		try {
 			let found = modmail.prepare('SELECT * FROM mails WHERE memberID = ? AND active = true').get([message.author.id]);
-			const avatar = await getProfilePic(message.author);
 
 			if (!found) {
 				modmail.prepare('INSERT INTO mails (memberID, active) VALUES (?,true)').run([message.author.id]);
 				found = modmail.prepare('SELECT * FROM mails WHERE memberID = ? AND active = true').get([message.author.id]);
 
-				const embed = createEmbed();
-				embed.setAuthor(`Hello, ${message.author.tag}`, avatar);
-				embed.setFooter('ModMail ticket created!');
-
-				await message.author.send(embed);
+				await message.author.send('[BOT] Your ticket has been created!');
 			}
 
 			const attachments = message.attachments.array();

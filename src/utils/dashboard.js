@@ -27,7 +27,7 @@ const CheckAuth = (req, res, next) => {
 };
 
 const getUnread = () => {
-	const mails = modmail.prepare('SELECT COUNT(*) FROM mails WHERE unread = true').get();
+	const mails = modmail.prepare('SELECT COUNT(*) FROM mails WHERE unread = true AND active = true').get();
 	return mails['COUNT(*)'];
 };
 

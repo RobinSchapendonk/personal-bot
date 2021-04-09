@@ -18,8 +18,23 @@ module.exports = async (client) => {
 					socket.emit('confirmedSendDM', ({ to, content, sentAt, id: parseInt(message.id).toString(36) }));
 
 					modmail.prepare('INSERT INTO messages (mailID, ID, memberID, message, attachments, sentAt) VALUES (?,?,?,?,?,?)').run([found.ID, parseInt(message.id).toString(36), message.author.id, message.content, JSON.stringify([]), message.createdTimestamp]);
-					modmail.prepare('UPDATE mails SET lastUpdate = ?, unread = true WHERE ID = ?').run([message.createdTimestamp, found.ID]);
 				});
+			} catch (e) {
+				return;
+			}
+		});
+
+
+		socket.on('closeDM', async ({ id }) => {
+			const found = modmail.prepare('SELECT * FROM mails WHERE ID = ? AND active = true').get([id]);
+			if (!found) return;
+
+			try {
+				const user = await client.users.fetch(found.memberID);
+				user.send('[BOT] Your ticket has been archived!');
+
+				modmail.prepare('UPDATE mails SET active = false WHERE ID = ?').run([id]);
+				return socket.emit('closeDM', ({ id }));
 			} catch (e) {
 				return;
 			}

@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<script src="https://cdn.socket.io/4.0.0/socket.io.min.js" integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
 		<title>Dashboard</title>
@@ -27,16 +28,25 @@
 			<table class="table text-white">
 				<tbody id="mails">
 					<% mails.forEach(mail => { %>
-						<tr><th>
+						<tr id="<%=mail.ID%>">
+						<th>
 							<a href="/mail/<%=mail.ID%>"><img src="<%=mail.avatar%>" width="50" height="50"> <%=mail.tag%></a>
 							<span id="mail-<%=mail.memberID%>" class="badge bg-secondary" <%=mail.unread == '1' ? "" : 'style=display:none;'%>>Unread</span>
-						</th></tr>
+						</th>
+						<th>
+							<button type="button" class="btn btn btn-danger" onclick="socket.emit('closeDM', { id: '<%=mail.ID%>' });">close</button>
+						</th>
+					</tr>
 					<% }) %>
 				</tbody>
 			</table>
 		</div>
 
-		<script src="/socket.io/socket.io.js"></script>
 		<script src="/js/main.js"></script>
+		<script>
+			socket.on('closeDM', ({ id }) => {
+				document.getElementById(id).remove();
+			});
+		</script>
 	</body>
 </html>
