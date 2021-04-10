@@ -6,7 +6,7 @@ const createEmbed = (title = null, description = null, fields = [], attachments 
 	if (description) embed.setDescription(description);
 	if (color) embed.setColor(color);
 	fields.map(field => {
-		embed.addField(field[0], field[1]);
+		embed.addField(field[0], field[1], field[2]);
 	});
 	if (attachments.length == 1) {
 		const image = new MessageAttachment(attachments[0], 'file.png');

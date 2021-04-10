@@ -1,7 +1,7 @@
 const { join } = require('path');
 const { createEmbed } = require(join(__dirname, '../utils/message.js'));
 
-const embed = createEmbed('Info about me', 'This is the private bot of </RobinSch>#7994. There is no way you can invite this bot.', [], [], '0000FF');
+const embed = createEmbed('Info about me', 'This is the personal bot of </RobinSch>#7994, it includes my site, my modmail, anti-raid, moderation and music. You can self host this bot using [this](https://github.com/RobinSchapendonk/personal-bot) link!', [], [], '0000FF');
 
 module.exports.run = async (client, message) => {
 	return message.channel.send(embed);

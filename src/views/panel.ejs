@@ -29,5 +29,12 @@
 		</div>
 		
 		<script src="/js/main.js"></script>
+		<script>
+			const unreadNav = document.getElementById('unread');
+
+			socket.on('unreadAmount', ({ amount }) => {
+				unreadNav.innerHTML = `Mail (${amount})`;
+			});
+		</script>
 	</body>
 </html>

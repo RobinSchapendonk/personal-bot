@@ -31,7 +31,7 @@
 						<tr id="<%=mail.ID%>">
 							<th>
 								<a href="/mail/<%=mail.ID%>"><img src="<%=mail.avatar%>" width="50" height="50"> <%=mail.tag%></a>
-								<span id="mail-<%=mail.memberID%>" class="badge bg-secondary" <%=mail.unread == '1' ? "" : 'style=display:none;'%>>Unread</span>
+								<span id="unread-<%=mail.ID%>" class="badge bg-secondary" <%=mail.unread == '1' ? "" : 'style=display:none;'%>>Unread</span>
 							</th>
 							<th>
 								<button type="button" class="btn btn btn-danger" onclick="socket.emit('closeDM', { id: '<%=mail.ID%>' });">close</button>
@@ -45,24 +45,36 @@
 		<script src="/js/main.js"></script>
 		<script>
 			const table = document.getElementById('mails');
+			const unreadNav = document.getElementById('unread');
 
 			socket.on('closeDM', ({ id }) => {
-				document.getElementById(id).remove();
+				return document.getElementById(id).remove();
 			});
 
-			socket.on('createDM', ({ id, memberID, tag, avatar, }) => {
+			socket.on('createDM', ({ id, tag, avatar, }) => {
 				const tr = table.insertRow(0);
 				tr.id = id;
 
 				const th = document.createElement('th');
 				th.innerHTML += `<a href="/mail/${id}"><img src="${avatar}" width="50" height="50"> ${tag}</a> `;
-				th.innerHTML += `<span id="mail-${memberID}" class="badge bg-secondary">Unread</span>`;
+				th.innerHTML += `<span id="unread-${id}" class="badge bg-secondary">Unread</span>`;
 
 				const th2 = document.createElement('th');
 				th2.innerHTML += `<button type="button" class="btn btn btn-danger" onclick="socket.emit('closeDM', { id: '${id}' });">close</button>`;
 
 				tr.appendChild(th);
 				return tr.appendChild(th2);
+			});
+
+			socket.on('unreadAmount', ({ amount }) => {
+				return unreadNav.innerHTML = `Mail (${amount})`;
+			});
+
+			socket.on('receiveDM', ({ id }) => {
+				const row = document.getElementById(id);
+				const badge = document.getElementById(`unread-${id}`);
+				table.insertBefore(row, table.childNodes[0]); 
+				return badge.style = '';
 			});
 		</script>
 	</body>

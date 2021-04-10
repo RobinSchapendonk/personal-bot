@@ -21,7 +21,7 @@ module.exports = async (client, message) => {
 				found = modmail.prepare('SELECT * FROM mails WHERE memberID = ? AND active = true').get([message.author.id]);
 
 				const avatar = getProfilePic(message.author);
-				io.emit('createDM', ({ id: found.ID, memberID: message.author.id, tag: message.author.tag, avatar }));
+				io.emit('createDM', ({ id: found.ID, tag: message.author.tag, avatar }));
 
 				await message.author.send('[BOT] Your ticket has been created!');
 			}
@@ -33,8 +33,8 @@ module.exports = async (client, message) => {
 			modmail.prepare('INSERT INTO messages (mailID, ID, memberID, message, attachments, sentAt) VALUES (?,?,?,?,?,?)').run([found.ID, parseInt(message.id).toString(36), message.author.id, message.content, JSON.stringify(files), message.createdTimestamp]);
 			modmail.prepare('UPDATE mails SET lastUpdate = ?, unread = true WHERE ID = ?').run([message.createdTimestamp, found.ID]);
 
-			io.emit('receiveDM', ({ from: message.author.id, content: message.content, id: parseInt(message.id).toString(36) }));
-			io.emit('unread', ({ from: message.author.id, unread: getUnread() }));
+			io.emit('receiveDM', ({ from: message.author.id, content: message.content, messageID: parseInt(message.id).toString(36), id: found.ID }));
+			io.emit('unreadAmount', ({ amount: getUnread() }));
 
 			return message.react('✅');
 		} catch (e) {

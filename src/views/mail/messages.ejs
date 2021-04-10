@@ -45,16 +45,18 @@
 		<script src="/js/main.js"></script>
 		<script>
 			const table = document.getElementById('messages');
+			const unreadNav = document.getElementById('unread');
 
-			socket.on('receiveDM', ({ from, content, id }) => {
+			socket.on('receiveDM', ({ from, content, messageID, id }) => {
 				if (from !== '<%=user.id%>') return;
 
+				socket.emit('read', { id });
 				document.getElementById('typing').innerHTML = "";
 
 				const audio = new Audio('/sounds/message.mp3');
 				audio.play();
 
-				return createMessage('<%=user.avatar%>', content, id);
+				return createMessage('<%=user.avatar%>', content, messageID);
 			});
 
 			socket.on('deleteDM', ({ from, id }) => {
@@ -82,6 +84,10 @@
 				return document.getElementById('typing').innerHTML = "";
 			});
 
+			socket.on('unreadAmount', ({ amount }) => {
+				return unreadNav.innerHTML = `Mail (${amount})`;
+			});
+
 			document.getElementById('send_message_form').addEventListener("submit", e => {
 				e.preventDefault();
 
@@ -107,9 +113,9 @@
 				th.appendChild(img);
 				th.innerHTML += " " + content;
 
-				tr.appendChild(th);
 				if (opacity) tr.style = `opacity: ${opacity}`;
 				if (id) tr.id = id;
+				return tr.appendChild(th);
 			};
 		</script>
 	</body>

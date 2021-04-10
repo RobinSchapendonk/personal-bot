@@ -16,7 +16,7 @@ module.exports.run = async (client, message, args) => {
 		settings.prepare('INSERT INTO messageProtection (guild, global, user) VALUES (?,?,?)').run([message.guild.id, global, user]);
 	}
 
-	return message.channel.send(`Global message protection is set to ${global == 'default' ? 'the default 0.1' : global} seconds!\nUser message protection is set to ${global == 'default' ? 'the default 0.5' : global} seconds!`);
+	return message.channel.send(`Global message protection is set to ${global == 'default' ? 'the default 0.1' : global} seconds!\nUser message protection is set to ${user == 'default' ? 'the default 0.5' : user} seconds!`);
 };
 
 module.exports.help = {

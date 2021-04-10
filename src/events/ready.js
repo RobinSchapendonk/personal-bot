@@ -18,6 +18,7 @@ module.exports = async (client) => {
 					socket.emit('confirmedSendDM', ({ to, content, sentAt, id: parseInt(message.id).toString(36) }));
 
 					modmail.prepare('INSERT INTO messages (mailID, ID, memberID, message, attachments, sentAt) VALUES (?,?,?,?,?,?)').run([found.ID, parseInt(message.id).toString(36), message.author.id, message.content, JSON.stringify([]), message.createdTimestamp]);
+					modmail.prepare('UPDATE mails SET lastUpdate = ?, unread = false WHERE ID = ?').run([message.createdTimestamp, found.ID]);
 				});
 			} catch (e) {
 				return;
@@ -34,11 +35,16 @@ module.exports = async (client) => {
 				user.send('[BOT] Your ticket has been archived!');
 
 				modmail.prepare('UPDATE mails SET active = false WHERE ID = ?').run([id]);
-				io.emit('unread', ({ unread: getUnread() }));
+				io.emit('unreadAmount', ({ amount: getUnread() }));
 				return socket.emit('closeDM', ({ id }));
 			} catch (e) {
 				return;
 			}
+		});
+
+		socket.on('read', ({ id }) => {
+			modmail.prepare('UPDATE mails SET unread = false WHERE ID = ?').run([id]);
+			return io.emit('unreadAmount', ({ amount: getUnread() }));
 		});
 	});
 };
