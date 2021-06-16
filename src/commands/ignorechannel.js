@@ -1,6 +1,5 @@
-const { join } = require('path');
-const { settings } = require(join(__dirname, '../utils/databases.js'));
-const { GetChannelFromArg } = require(join(__dirname, '../utils/message.js'));
+const { settings } = require('../utils/databases.js');
+const { GetChannelFromArg } = require('../utils/message.js');
 
 module.exports.run = async (client, message, args) => {
 	if(!message.member.hasPermission('MANAGE_MESSAGES')) return;

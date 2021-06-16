@@ -1,7 +1,6 @@
-const { join } = require('path');
-const { punishments } = require(join(__dirname, '../utils/databases.js'));
-const { getUUID } = require(join(__dirname, '../utils/functions.js'));
-const { GetMemberFromArg } = require(join(__dirname, '../utils/message.js'));
+const { punishments } = require('../utils/databases.js');
+const { getUUID } = require('../utils/functions.js');
+const { GetMemberFromArg } = require('../utils/message.js');
 
 module.exports.run = async (client, message, args) => {
 	if(!message.member.hasPermission('KICK_MEMBERS')) return;

@@ -1,6 +1,5 @@
-const { join } = require('path');
-const { modmail } = require(join(__dirname, '../utils/databases.js'));
-const { io, getUnread } = require(join(__dirname, '../utils/dashboard.js'));
+const { modmail } = require('../utils/databases.js');
+const { io, getUnread } = require('../utils/dashboard.js');
 
 module.exports = async (client) => {
 	console.log(`${client.user.tag} has started!`);

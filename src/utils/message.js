@@ -1,5 +1,14 @@
 const { MessageEmbed, MessageAttachment } = require('discord.js');
 
+/**
+ * Generate an embed
+ * @param {string} title - The embed title
+ * @param {string} description - The embed description
+ * @param {array} fields - The embed fields
+ * @param {array} attachments - The embed attachments
+ * @param {string} color - The embed colour
+ * @returns MessageEmbed
+ */
 const createEmbed = (title = null, description = null, fields = [], attachments = [], color = 'RANDOM') => {
 	const embed = new MessageEmbed();
 	if (title) embed.setTitle(title);
@@ -18,6 +27,12 @@ const createEmbed = (title = null, description = null, fields = [], attachments 
 	return embed;
 };
 
+/**
+ * Get the member from an argument
+ * @param {string} argument - The argument
+ * @param {Collection} members - The members of a guild
+ * @returns Member
+ */
 const GetMemberFromArg = (argument, members) => {
 	// eslint-disable-next-line no-async-promise-executor
 	return new Promise(async (resolve, reject) => {
@@ -57,6 +72,12 @@ const GetMemberFromArg = (argument, members) => {
 	});
 };
 
+/**
+ * Get the channel from an argument
+ * @param {string} argument - The argument
+ * @param {Collection} channels - The channels of a guild
+ * @returns Member
+ */
 const GetChannelFromArg = (argument, channels) => {
 	// eslint-disable-next-line no-async-promise-executor
 	return new Promise(async (resolve, reject) => {
@@ -84,6 +105,11 @@ const GetChannelFromArg = (argument, channels) => {
 	});
 };
 
+/**
+ * Get the profile picture of a user
+ * @param {User} user - The user
+ * @returns string
+ */
 const getProfilePic = (user) => {
 	if (user.avatar == null) {
 		return `https://cdn.discordapp.com/embed/avatars/${parseInt(user.discriminator) % 5}.png`;

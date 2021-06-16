@@ -1,6 +1,5 @@
-const { join } = require('path');
-const { punishments } = require(join(__dirname, '../utils/databases.js'));
-const { createEmbed, GetMemberFromArg } = require(join(__dirname, '../utils/message.js'));
+const { punishments } = require('../utils/databases.js');
+const { createEmbed, GetMemberFromArg } = require('../utils/message.js');
 
 module.exports.run = async (client, message, args) => {
 	if(!message.member.hasPermission('MANAGE_MESSAGES')) return;

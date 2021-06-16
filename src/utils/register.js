@@ -1,5 +1,9 @@
 const { readdir } = require('fs');
 
+/**
+ * Load the commands
+ * @param {Client} client - The client
+ */
 const loadCommands = (client) => {
 	readdir('./src/commands/', (err, files) => {
 		if (err) console.error(err);
@@ -14,6 +18,10 @@ const loadCommands = (client) => {
 	});
 };
 
+/**
+ * Load the events
+ * @param {Client} client - The client
+ */
 const loadEvents = (client) => {
 	readdir('./src/events', (err, files) => {
 		if (err) console.error(err);

@@ -4,7 +4,7 @@
   "description": "My personal bot",
   "main": "src/index.js",
   "scripts": {
-    "start": "docker-compose up -d --force-recreate",
+    "start": "node src/index.js",
     "start-docker": "docker-compose up -d --force-recreate",
     "start-normal": "npm install && node src/index.js"
   },
@@ -26,7 +26,6 @@
     "http": "0.0.1-security",
     "passport": "^0.4.1",
     "passport-discord": "^0.1.4",
-    "path": "^0.12.7",
     "socket.io": "^4.0.1",
     "ytdl-core": "^4.4.2"
   }

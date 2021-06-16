@@ -1,5 +1,4 @@
-const { join } = require('path');
-const databases = require(join(__dirname, '../utils/databases.js'));
+const databases = require('../utils/databases.js');
 const settings = databases.settings;
 
 module.exports.run = async (client, message, args) => {

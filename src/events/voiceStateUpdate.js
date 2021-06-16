@@ -1,5 +1,4 @@
 const { readdirSync } = require('fs');
-const { join } = require('path');
 const ytdl = require('ytdl-core');
 
 
@@ -18,14 +17,14 @@ module.exports = async (client, oldState, newState) => {
 
 	if (serverQueue) return;
 
-	const files = readdirSync(join(__dirname, '../../music/'));
+	const files = readdirSync('../../music/');
 	const mp3Files = files.filter(f => f.split('.').pop() === 'mp3');
 	if (mp3Files.length == 0) return;
 	shuffleArray(mp3Files);
 
 	mp3Files.forEach(async f => {
 		serverQueue = client.queue.get(newState.member.guild.id);
-		const path = join(__dirname, `../../music/${f}`);
+		const path = `../../music/${f}`;
 		const file = path.split('/')[path.split('/').length - 1];
 		const name = (file.split('.').splice(0, file.split('.').length - 1)).join('.');
 		const songObj = {

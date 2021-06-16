@@ -1,6 +1,5 @@
-const { join } = require('path');
-const { settings } = require(join(__dirname, '../utils/databases.js'));
-// const { log } = require(join(__dirname, '../utils/functions.js'));
+const { settings } = require('../utils/databases.js');
+// const { log } = require('../utils/functions.js');
 
 module.exports = async (client, member) => {
 	const data = settings.prepare('SELECT cooldown FROM joinProtection WHERE guild = ?').get(member.guild.id);

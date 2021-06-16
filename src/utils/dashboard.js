@@ -11,21 +11,23 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const { Strategy } = require('passport-discord');
-const { join } = require('path');
+const path = require('path');
 
-const { modmail } = require(join(__dirname, '../utils/databases.js'));
-const { getProfilePic } = require(join(__dirname, '../utils/message.js'));
-const { client } = require(join(__dirname, '../index.js'));
+const { modmail } = require('../utils/databases.js');
+const { getProfilePic } = require('../utils/message.js');
+const { client } = require('../index.js');
 
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
+/** Check if the user is logged in */
 const CheckAuth = (req, res, next) => {
 	if(req.isAuthenticated()) return next();
 	else return res.redirect('/login');
 };
 
+/** Get the amount of unread mails */
 const getUnread = () => {
 	const mails = modmail.prepare('SELECT COUNT(*) FROM mails WHERE unread = true AND active = true').get();
 	return mails['COUNT(*)'];
@@ -54,11 +56,11 @@ passport.use(
 	),
 );
 
-app.use(express.static(join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../public')));
 app.use(session({ secret: 'panel', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.set('views', join(__dirname, '../views'));
+app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', 'ejs');
 app.get('/login', passport.authenticate('discord', { scope: ['identify'], prompt: 'none' }));
 app.get('/callback', passport.authenticate('discord', { failureRedirect: '/login', successRedirect: '/panel' }));
@@ -138,15 +140,9 @@ app.get('/mail/:ID', CheckAuth, async (req, res) => {
 	});
 });
 
-app.get('/', (req, res) => {
-	return res.sendFile(join(__dirname, '../views/personal/index.html'));
-});
-app.get('/about', (req, res) => {
-	return res.sendFile(join(__dirname, '../views/personal/about.html'));
-});
-app.get('/projects', (req, res) => {
-	return res.sendFile(join(__dirname, '../views/personal/projects.html'));
-});
+app.get('/', (req, res) => res.render('personal/index.ejs'));
+app.get('/discord', (req, res) => res.redirect('https://discord.gg/9f5vXfn'));
+app.get('*', (req, res) => res.render('404.ejs'));
 
 http.listen(PORT, () => {
 	return console.log(`listening on ${BASE_URL}`);

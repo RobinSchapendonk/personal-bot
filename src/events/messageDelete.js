@@ -1,6 +1,5 @@
-const { join } = require('path');
-const { io } = require(join(__dirname, '../utils/dashboard.js'));
-const { modmail } = require(join(__dirname, '../utils/databases.js'));
+const { io } = require('../utils/dashboard.js');
+const { modmail } = require('../utils/databases.js');
 
 module.exports = async (client, message) => {
 	if (message.channel.type !== 'dm') return;

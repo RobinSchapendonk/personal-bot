@@ -1,5 +1,4 @@
-const { join } = require('path');
-const { GetMemberFromArg } = require(join(__dirname, '../utils/message.js'));
+const { GetMemberFromArg } = require('../utils/message.js');
 
 module.exports.run = async (client, message, args) => {
 	if(!message.member.hasPermission('MANAGE_MESSAGES')) return;

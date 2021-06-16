@@ -3,11 +3,10 @@ const {
 	OWNERS,
 } = process.env;
 
-const { join } = require('path');
-const { io, getUnread } = require(join(__dirname, '../utils/dashboard.js'));
-const { settings, modmail } = require(join(__dirname, '../utils/databases.js'));
-// const { log } = require(join(__dirname, '../utils/functions.js'));
-const { getProfilePic, clean } = require(join(__dirname, '../utils/message.js'));
+const { io, getUnread } = require('../utils/dashboard.js');
+const { settings, modmail } = require('../utils/databases.js');
+// const { log } = require('../utils/functions.js');
+const { getProfilePic, clean } = require('../utils/message.js');
 
 module.exports = async (client, message) => {
 	if (message.author.bot) return;

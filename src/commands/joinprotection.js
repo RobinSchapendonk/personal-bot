@@ -1,5 +1,4 @@
-const { join } = require('path');
-const { settings } = require(join(__dirname, '../utils/databases.js'));
+const { settings } = require('../utils/databases.js');
 
 module.exports.run = async (client, message, args) => {
 	const oldCooldown = settings.prepare('SELECT * FROM joinProtection WHERE guild = ?').get(message.guild.id);

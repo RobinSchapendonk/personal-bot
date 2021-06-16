@@ -1,5 +1,4 @@
-const { join } = require('path');
-const { io } = require(join(__dirname, '../utils/dashboard.js'));
+const { io } = require('../utils/dashboard.js');
 
 module.exports = async (client, channel, user) => {
 	if (channel.type !== 'dm') return;
